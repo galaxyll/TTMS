@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="gh.ttms.dao.MovieMapper">
+
+<insert id="addMovie" parameterType="gh.ttms.pojo.Movie">
+        insert into movie(moviename,type, duration, introduction, release_date,author,production) values (#{moviename},#{type},#{duration},#{introduction},#{releaseDate},#{author},#{production});
+    </insert>
+    <select id="getMovieByName"  resultType="gh.ttms.pojo.Movie">
+        select moviename, photo, type, duration, introduction, release_date as releaseDate,score,author,production,status from movie where moviename=#{moviename};
+    </select>
+
+    <select id="getMovieList" resultType="gh.ttms.pojo.Movie">
+        select moviename, photo, type, duration, introduction, release_date as releaseDate,score,author,production,status from movie where status!=-1;
+    </select>
+
+    <insert id="addPhoto" parameterType="gh.ttms.pojo.Movie">
+        update movie set photo=#{photo} where moviename=#{moviename};
+    </insert>
+
+    <select id="getIDByName" parameterType="String" resultType="int">
+        select id from movie where moviename=#{moviename}
+    </select>
+
+    <update id="updateMovie" parameterType="gh.ttms.pojo.Movie">
+        update movie
+        <set>
+        <if test="photo != null">
+            photo=#{photo},
+        </if>
+        <if test="type != null">
+            type=#{type},
+        </if>
+        <if test="duration != null">
+            duration=#{duration},
+        </if>
+        <if test="introduction != null">
+            introduction=#{introduction},
+        </if>
+        <if test="releaseDate != null">
+            release_date=#{releaseDate},
+        </if>
+        <if test="production != null">
+            production=#{production},
+        </if>
+        <if test="status != null">
+            status=#{status}
+        </if>
+        </set>
+        where moviename=#{moviename};
+    </update>
+
+    <select id="getMovieNameNotShow" resultType="String">
+         select moviename from movie where status=0;
+    </select>
+
+    <select id="getMovieNameHadShow" resultType="String">
+         select moviename from movie where status=1;
+    </select>
+
+    <update id="updateMovieStatus" parameterType="String">
+        update movie set status=1 where moviename=#{moviename};
+    </update>
+
+    <update id="deleteMovie" parameterType="String">
+        update movie set status=-1 where moviename=#{moviename};
+    </update>
+
+    <select id="getHotMovieList" resultType="gh.ttms.pojo.param.Stringstring">
+        select moviename as name,photo as url from movie where status=1 order by quantity;
+    </select>
+    <select id="getHighMovieList" resultType="gh.ttms.pojo.param.Stringstring">
+        select moviename as name,photo as url from movie where status=1 order by score;
+    </select>
+    <select id="getFutureMovieList" resultType="gh.ttms.pojo.param.Stringstring">
+        select moviename as name,photo as url from movie where release_date>now() and status=1 order by release_date desc;
+    </select>
+    <update id="addMovieQuantity" parameterType="gh.ttms.pojo.param.IntAndString">
+        update movie set quantity=#{num} where moviename=#{name};
+    </update>
+    <select id="getMovieQuantity" parameterType="String" resultType="int">
+        select quantity from movie where moviename=#{moviename};
+    </select>
+    <select id="getPhotoByName" parameterType="String" resultType="String">
+        select photo from movie where moviename=#{moviename};
+    </select>
+    <update id="alterTotalScore" parameterType="gh.ttms.pojo.param.IntAndString">
+        update movie set totalScore=#{num} where moviename=#{name};
+    </update>
+    <update id="alterScore" parameterType="gh.ttms.pojo.param.FloatAndString">
+        update movie set score=#{num} where moviename=#{name};
+    </update>
+    <select id="getTotalScore" parameterType="String" resultType="int">
+        select totalScore from movie where moviename=#{moviename};
+    </select>
+    <select id="getMovieSell" resultType="gh.ttms.pojo.param.IntAndString">
+        select moviename as name, quantity as num from movie;
+    </select>
+</mapper>
